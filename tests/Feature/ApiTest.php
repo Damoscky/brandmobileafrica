@@ -17,4 +17,33 @@ class ApiTest extends TestCase
         $response = $this->get('/api/v1/test');
         $response->assertOk();
     }
+
+    /**
+     * @test
+     * @group api
+     */
+    public function testGetAllQuestion()
+    {
+        $response = $this->get('/question');
+        $response->assertStatus(200)
+            ->assertJson([
+                'error' => false
+            ]);
+    }
+
+    /**
+     * @test
+     * @group api
+     */
+    public function testStoreQuestion()
+    {
+        $response = $this->postJson('/question/store', [
+            'category_id' => 1,
+            'question' => '',
+        ]);
+        $response->assertStatus(201)
+            ->assertJson([
+                'error' => false
+            ]);
+    }
 }
