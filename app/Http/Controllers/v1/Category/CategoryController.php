@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\v1\Category;
 
+use Validator;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -68,7 +70,7 @@ class CategoryController extends Controller
                 'data' => null
             ]);
         }
-        DB::beginTransaction();
+        // DB::beginTransaction();
         try {
             $category = Category::create([
                 'name' => $request->name
@@ -80,13 +82,13 @@ class CategoryController extends Controller
                     'data' => null
                 ]);
             }
-            DB::commit();
+            // DB::commit();
             return response()->json([
                 'error' => false,
                 'message' => 'Category saved successfully',
                 'data' => $category
-            ]);
-            DB::rollBack();
+            ], 201);
+            // DB::rollBack();
         } catch (\Throwable $th) {
             return response()->json([
                 'error' => true,
