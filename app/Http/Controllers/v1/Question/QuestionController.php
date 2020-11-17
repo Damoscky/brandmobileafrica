@@ -267,62 +267,50 @@ class QuestionController extends Controller
     public function uploadQuestion(Request $request)
     {
         $rules = array(
-            'file' => 'required'
+            'question' => 'required'
         );
 
-        $validator = Validator::make($request->all(), $rules);
-        // process the form
-        // if ($validator->fails()){
-        //     return response()->json([
-        //         'error' => true,
-        //         'message' => $validator,
-        //         'data' => null
-        //     ]);
-        // }
-        // else
-        // {
-            $file = $request->question;
-            try {
-                Excel::import($file, function ($reader) {
-                    foreach ($reader->toArray() as $row[]) {
-                        foreach($row as $data){
-                            return $row['question'];
-                            return $data['categories'];
-                            $category = Category::where('name', $data['categories'])->first();
-                            if (!$category) {
-                                return response()->json([
-                                    'error' => true,
-                                    'message' => 'Invalid Category',
-                                    'data' => null
-                                ]);
-                            }else{
-                                Question::firstOrCreate([
-                                    'question' => $data['question'],
-                                    'is_general' => $data['is_general'],
-                                    'category_id' => $category['id'],
-                                    'point' => $data['point'],
-                                    'icon_url' => $data['icon_url'],
-                                ]);
-                                $choice = Choice::firstOrCreate([
-                                    ''
-                                ]);
-                            }
+        $file = $request->question;
+        try {
+            Excel::import($file, function ($reader) {
+                foreach ($reader->toArray() as $row[]) {
+                    foreach($row as $data){
+                        return $row['question'];
+                        return $data['categories'];
+                        $category = Category::where('name', $data['categories'])->first();
+                        if (!$category) {
+                            return response()->json([
+                                'error' => true,
+                                'message' => 'Invalid Category',
+                                'data' => null
+                            ]);
+                        }else{
+                            Question::firstOrCreate([
+                                'question' => $data['question'],
+                                'is_general' => $data['is_general'],
+                                'category_id' => $category['id'],
+                                'point' => $data['point'],
+                                'icon_url' => $data['icon_url'],
+                            ]);
+                            $choice = Choice::firstOrCreate([
+                                ''
+                            ]);
                         }
-
                     }
-                });
-                return response()->json([
-                    'error' => false,
-                    'message' => 'Record uploaded successfully',
-                    'data' => null
-                ]);
-            } catch (\Exception $error) {
-                return response()->json([
-                    'error' => true,
-                    'message' => $error->getMessage(),
-                    'data' => null
-                ]);
-            }
-        // }
+
+                }
+            });
+            return response()->json([
+                'error' => false,
+                'message' => 'Record uploaded successfully',
+                'data' => null
+            ]);
+        } catch (\Exception $error) {
+            return response()->json([
+                'error' => true,
+                'message' => $error->getMessage(),
+                'data' => null
+            ]);
+        }
     }
 }
