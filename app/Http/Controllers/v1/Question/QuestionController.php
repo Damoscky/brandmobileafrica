@@ -281,28 +281,30 @@ class QuestionController extends Controller
         // }
         // else
         // {
-            $file= public_path(). "/assets/question/question_excel.XLSX";
+            $file = $request->question;
             try {
                 Excel::import($file, function ($reader) {
                     foreach ($reader->toArray() as $row[]) {
                         foreach($row as $data){
                             return $row['question'];
                             return $data['categories'];
-                            $medicinetype = MedicineType::where('name', $data['type'])->first();
-                            if (!$medicinetype) {
-                                // dd('Invalid Drug Type');
-                                toastr()->error('Invalid Drug Type');
-                                \Session::flash('error', 'Invalid Drug Type');
-                                return redirect(route('import.drug'));
+                            $category = Category::where('name', $data['categories'])->first();
+                            if (!$category) {
+                                return response()->json([
+                                    'error' => true,
+                                    'message' => 'Invalid Category',
+                                    'data' => null
+                                ]);
                             }else{
-                                // dd($medicinetype);
-                                Medicine::firstOrCreate([
-                                    'name' => $data['name'],
-                                    'active_ingredients' => $data['active_ingredients'],
-                                    'registration_no' => $data['registration_no'],
-                                    'brand_name' => $data['brand_name'],
-                                    'manufacturer' => $data['manufacturer'],
-                                    'type_id' => $medicinetype['id'],
+                                Question::firstOrCreate([
+                                    'question' => $data['question'],
+                                    'is_general' => $data['is_general'],
+                                    'category_id' => $category['id'],
+                                    'point' => $data['point'],
+                                    'icon_url' => $data['icon_url'],
+                                ]);
+                                $choice = Choice::firstOrCreate([
+                                    ''
                                 ]);
                             }
                         }
